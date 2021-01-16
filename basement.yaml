@@ -16,6 +16,18 @@ i2c:
     scl: GPIO5
     scan: True
 
+# Example configuration entry
+climate:
+  - platform: pid
+    name: "Climate Controller"
+    sensor: temperature_sensor
+    default_target_temperature: 21°C
+    #heat_output: heater
+    control_parameters:
+      kp: 0.49460
+      ki: 0.00487
+      kd: 12.56301
+
 sensor:
   - platform: bmp280
     i2c_id: bmp
