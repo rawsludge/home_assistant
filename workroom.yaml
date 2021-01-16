@@ -1,0 +1,29 @@
+substitutions:
+  device_id: workroom
+  device_name: Workroom Temperature
+  platform: ESP8266
+  board: nodemcuv2
+  ota_pwd: !secret ota_pwd
+  api_pwd: !secret api_pwd
+  ap_wifi_pwd: !secret ap_wifi_pwd
+
+<<: !include common/esphome.yaml
+<<: !include common/common.yaml
+
+spi:
+  miso_pin: D0
+  clk_pin: D1
+
+sensor:
+  - platform: max6675
+    name: "Workroom Temperature"
+    cs_pin: D2
+    update_interval: 60s
+    accuracy_decimals: 2
+  - !include common/sensor/uptime.yaml
+  - !include common/sensor/wifi.yaml
+
+
+text_sensor:
+  - !include common/text_sensor/version.yaml
+  - !include common/text_sensor/wifi.yaml

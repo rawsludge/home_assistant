@@ -1,0 +1,4 @@
+esphome:
+  name: ${device_id}
+  platform: ${platform}
+  board: ${board}

@@ -1,0 +1,106 @@
+substitutions:
+  device_id: sprinkler
+  device_name: Sprinkler System
+  platform: ESP8266
+  board: nodemcuv2
+  ota_pwd: !secret ota_pwd
+  api_pwd: !secret api_pwd
+  ap_wifi_pwd: !secret ap_wifi_pwd
+
+globals:
+ - id: remaining_time1
+   type: int
+   restore_value: no
+   initial_value: '0'
+ - id: remaining_time2
+   type: int
+   restore_value: no
+   initial_value: '0'
+
+<<: !include common/esphome.yaml
+<<: !include common/common.yaml
+
+sensor:
+  - platform: homeassistant
+    id: ha_zone1_duration
+    entity_id: input_number.zone1_duration
+    on_value:
+      then:
+      - sensor.template.publish:
+          id: zone1_duration
+          state: !lambda "{ id(remaining_time1) =id(ha_zone1_duration).state;  return id(ha_zone1_duration).state;}"
+  - platform: template
+    name: Zone1 Remaining Duration
+    id: zone1_duration
+    icon: mdi:timer-outline
+
+  - platform: homeassistant
+    id: ha_zone2_duration
+    entity_id: input_number.zone2_duration
+    on_value:
+      then:
+      - sensor.template.publish:
+          id: zone2_duration
+          state: !lambda "{ id(remaining_time2) =id(ha_zone2_duration).state; return id(ha_zone2_duration).state; }"
+  - platform: template
+    name: Zone2 Remaining Duration
+    id: zone2_duration
+    icon: mdi:timer-outline
+  - !include common/sensor/uptime.yaml
+  - !include common/sensor/wifi.yaml
+
+text_sensor:
+  - !include common/text_sensor/version.yaml
+  - !include common/text_sensor/wifi.yaml
+
+switch:
+  - platform: gpio
+    name: Sprinkler Zone1
+    id: zone1
+    interlock: [zone2]
+    pin:
+      number: D1
+      inverted: yes
+    on_turn_on:
+      then:
+        - globals.set:
+            id: remaining_time1
+            value: !lambda return id(ha_zone1_duration).state;
+        - sensor.template.publish:
+            id: zone1_duration
+            state: !lambda return id(ha_zone1_duration).state;
+
+  - platform: gpio
+    name: Sprinkler Zone2
+    id: zone2
+    interlock: [zone1]
+    pin: 
+      number: D2
+      inverted: yes
+    on_turn_on:
+      then:
+        - globals.set:
+            id: remaining_time2
+            value: !lambda return id(ha_zone2_duration).state;
+        - sensor.template.publish:
+            id: zone2_duration
+            state: !lambda return id(ha_zone2_duration).state;
+
+interval:
+  - interval: 5s
+    then:
+      - lambda: |-           
+          if(id(zone1).state) {
+            id(zone1_duration).publish_state(id(remaining_time1));
+            if(id(remaining_time1)<=0){
+              id(zone1).turn_off();
+            }
+            id(remaining_time1)=id(remaining_time1)-5;
+          }      
+          if(id(zone2).state) {
+            id(zone2_duration).publish_state(id(remaining_time2));
+            if(id(remaining_time2)<=0){
+              id(zone2).turn_off();
+            }
+            id(remaining_time2)=id(remaining_time2)-5;
+          }      

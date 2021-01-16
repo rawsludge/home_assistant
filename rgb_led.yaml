@@ -1,0 +1,56 @@
+substitutions:
+  device_id: rgb_led
+  device_name: "Rgbww Led Strip"
+  platform: ESP8266
+  board: nodemcuv2
+  ota_pwd: !secret ota_pwd
+  api_pwd: !secret api_pwd
+  ap_wifi_pwd: !secret ap_wifi_pwd
+
+<<: !include common/esphome.yaml
+<<: !include common/common.yaml
+
+light:
+  - platform: rgbw
+    name: "Garden Lights"
+    red: output1
+    green: output2
+    blue: output3
+    white: output4
+    effects:
+      #- addressable_rainbow:
+      #- addressable_color_wipe:
+      #- addressable_scan:
+      #- addressable_twinkle:
+      #- addressable_random_twinkle:
+      #- addressable_fireworks:
+      #- addressable_flicker:
+      - flicker:
+      - strobe:
+      - random:
+          name: Random Effect With Custom Values
+          transition_length: 100ms
+          update_interval: 1000ms
+
+
+output:
+  - platform: esp8266_pwm
+    id: output1
+    pin: D0    
+    frequency: 200Hz
+
+  - platform: esp8266_pwm
+    id: output2
+    pin: D1
+    frequency: 200Hz
+
+  - platform: esp8266_pwm
+    id: output3
+    pin: D2
+    frequency: 200Hz
+
+  - platform: esp8266_pwm
+    id: output4
+    pin: D3    
+    frequency: 200Hz
+
