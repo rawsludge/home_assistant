@@ -1,0 +1,40 @@
+substitutions:
+  device_id: basement
+  device_name: Basement
+  platform: ESP8266
+  board: nodemcuv2
+  ota_pwd: !secret ota_pwd
+  api_pwd: !secret api_pwd
+  ap_wifi_pwd: !secret ap_wifi_pwd
+
+<<: !include common/esphome.yaml
+<<: !include common/common.yaml
+
+i2c:
+  - id: bmp
+    sda: GPIO4
+    scl: GPIO5
+    scan: True
+
+sensor:
+  - platform: bmp280
+    i2c_id: bmp
+    temperature:
+      name: "Basement Temperature"  
+      oversampling: 2x
+      accuracy_decimals: 2
+      filters:
+        - lambda: return x - 2.50;
+    pressure:
+      name: "Basement Pressure"      
+      oversampling: 1x
+      accuracy_decimals: 2
+    address: 0x76
+    update_interval: 60s
+    iir_filter: 2x
+  - !include common/sensor/uptime.yaml
+  - !include common/sensor/wifi.yaml
+
+text_sensor:
+  - !include common/text_sensor/version.yaml
+  - !include common/text_sensor/wifi.yaml
