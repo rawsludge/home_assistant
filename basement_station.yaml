@@ -1,6 +1,6 @@
 substitutions:
-  device_id: basement
-  device_name: Basement
+  device_id: basement_station
+  device_name: "Basement Station"
   platform: ESP8266
   board: nodemcuv2
   ota_pwd: !secret ota_pwd
@@ -11,34 +11,26 @@ substitutions:
 <<: !include common/common.yaml
 
 i2c:
-  - id: bmp
-    sda: GPIO4
-    scl: GPIO5
+  - id: bme
+    sda: GPIO5
+    scl: GPIO4
     scan: True
 
-# Example configuration entry
-climate:
-  - platform: pid
-    name: "Climate Controller"
-    sensor: temperature_sensor
-    default_target_temperature: 21°C
-    #heat_output: heater
-    control_parameters:
-      kp: 0.49460
-      ki: 0.00487
-      kd: 12.56301
-
 sensor:
-  - platform: bmp280
-    i2c_id: bmp
+  - platform: bme280
+    i2c_id: bme
     temperature:
-      name: "Basement Temperature"  
+      name: "${device_name} Temperature"  
       oversampling: 2x
       accuracy_decimals: 2
       filters:
-        - lambda: return x - 2.50;
+        - lambda: return x - 2.0;
     pressure:
-      name: "Basement Pressure"      
+      name: "${device_name} Pressure"      
+      oversampling: 1x
+      accuracy_decimals: 2
+    humidity:
+      name: "${device_name} Humidity"      
       oversampling: 1x
       accuracy_decimals: 2
     address: 0x76

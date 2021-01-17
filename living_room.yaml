@@ -20,13 +20,13 @@ sensor:
   - platform: bmp280
     i2c_id: bmp
     temperature:
-      name: "Living Room Temperature"  
+      name: "${device_name} Temperature"  
       oversampling: 2x
       accuracy_decimals: 2
       filters:
-        - lambda: return x - 2.50;
+        - lambda: return x - 2.0;
     pressure:
-      name: "Living Room Pressure"      
+      name: "${device_name} Pressure"      
       oversampling: 1x
       accuracy_decimals: 2
     address: 0x76
