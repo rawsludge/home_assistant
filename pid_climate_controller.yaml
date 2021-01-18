@@ -1,0 +1,68 @@
+substitutions:
+  device_id: climate_controller
+  device_name: "Climate Controller"
+  platform: ESP8266
+  board: d1_mini
+  ota_pwd: !secret ota_pwd
+  api_pwd: !secret api_pwd
+  ap_wifi_pwd: !secret ap_wifi_pwd
+
+
+<<: !include common/esphome.yaml
+<<: !include common/common.yaml
+
+climate:
+  - platform: pid
+    id: pid_climate
+    name: "Climate Controller"
+    sensor: temperature_sensor
+    default_target_temperature: 21.2
+    heat_output: heater_controller
+    visual:
+      min_temperature: 18 °C
+      max_temperature: 25 °C
+      temperature_step: 0.1 °C
+    control_parameters:
+      kp: 0.49460
+      ki: 0.00487
+      kd: 12.56301    
+
+sensor:
+  - platform: homeassistant
+    id: temperature_sensor
+    entity_id: sensor.living_room_temperature
+  - platform: pid
+    name: "Climate Result"
+    type: RESULT
+  - !include common/sensor/uptime.yaml
+  - !include common/sensor/wifi.yaml
+
+
+text_sensor:
+  - !include common/text_sensor/version.yaml
+  - !include common/text_sensor/wifi.yaml
+
+output:
+  - platform: template
+    id: heater_controller
+    type: float
+    write_action:
+      - if:
+          condition:
+            lambda: return ((state > 0.0));
+          then:
+            - switch.turn_on: heater
+          else:
+            - switch.turn_off: heater
+          
+switch:
+  - platform: gpio
+    id: heater    
+    internal: true
+    pin:
+      mode: OUTPUT
+      number: D1
+  - platform: template
+    name: "Climate Autotune"
+    turn_on_action:
+      - climate.pid.autotune: pid_climate    
