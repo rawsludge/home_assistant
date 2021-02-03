@@ -1,0 +1,34 @@
+substitutions:
+  device_id: village_station
+  device_name: "Village Station"
+  platform: ESP8266
+  board: d1_mini
+  ota_pwd: !secret ota_pwd
+  api_pwd: !secret api_pwd
+  ap_wifi_pwd: !secret ap_wifi_pwd
+
+
+<<: !include common/esphome.yaml
+<<: !include common/common.yaml
+
+
+sensor:
+  - platform: dht
+    pin: D4
+    temperature:
+      name: "${device_name} Temperature"
+      accuracy_decimals: 2
+      filters:
+        - lambda: return x - 4.0;
+    humidity:
+      name: "${device_name} Humidity"
+      accuracy_decimals: 2
+    update_interval: 60s    
+    model: DHT11
+  - !include common/sensor/uptime.yaml
+  - !include common/sensor/wifi.yaml
+
+
+text_sensor:
+  - !include common/text_sensor/version.yaml
+  - !include common/text_sensor/wifi.yaml

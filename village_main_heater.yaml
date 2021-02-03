@@ -1,0 +1,29 @@
+substitutions:
+  device_id: village_main_heater
+  device_name: Village Main Heater
+  platform: ESP8266
+  board: d1_mini
+  ota_pwd: !secret ota_pwd
+  api_pwd: !secret api_pwd
+  ap_wifi_pwd: !secret ap_wifi_pwd
+
+
+<<: !include common/esphome.yaml
+<<: !include common/common.yaml
+
+sensor:
+  - !include common/sensor/uptime.yaml
+  - !include common/sensor/wifi.yaml
+
+
+text_sensor:
+  - !include common/text_sensor/version.yaml
+  - !include common/text_sensor/wifi.yaml
+
+switch:
+  - platform: gpio
+    pin:
+      number: D1
+      mode: OUTPUT
+    name: "${device_name} Switch"
+    restore_mode: ALWAYS_OFF
