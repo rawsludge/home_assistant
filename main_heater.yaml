@@ -1,6 +1,6 @@
 substitutions:
-  device_id: heater
-  device_name: Main Heater
+  device_id: main_heater
+  device_name: "Main Heater"
   platform: ESP8266
   board: nodemcuv2
   ota_pwd: !secret ota_pwd
@@ -25,5 +25,5 @@ switch:
     pin:
       number: D1
       mode: OUTPUT
-    name: Main Heater
+    name: "${device_name} Switch"
     restore_mode: ALWAYS_OFF
