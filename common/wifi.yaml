@@ -1,6 +1,8 @@
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_passwd
+  reboot_timeout: 5min
+  output_power: 20.5dB
   ap:
     ssid: ${device_id}
     password: ${ap_wifi_pwd}

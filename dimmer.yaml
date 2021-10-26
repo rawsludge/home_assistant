@@ -1,0 +1,29 @@
+substitutions:
+  device_id: dimmer
+  device_name: Dimmer Light Room
+  platform: ESP8266
+  board: nodemcuv2
+  ota_pwd: !secret ota_pwd
+  api_pwd: !secret api_pwd
+  ap_wifi_pwd: !secret ap_wifi_pwd
+
+<<: !include common/esphome.yaml
+<<: !include common/common.yaml
+
+output:
+  - platform: ac_dimmer
+    id: dimmer1
+    gate_pin: D2
+    zero_cross_pin:
+      number: D1
+      mode: INPUT
+      inverted: yes
+
+light:
+  - platform: monochromatic
+    output: dimmer1
+    name: Dimmerized Light
+
+sensor
+  - !include common/sensor/uptime.yaml
+  - !include common/sensor/wifi.yaml

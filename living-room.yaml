@@ -1,5 +1,5 @@
 substitutions:
-  device_id: living_room
+  device_id: living-room
   device_name: Living Room
   platform: ESP8266
   board: nodemcuv2
@@ -11,14 +11,14 @@ substitutions:
 <<: !include common/common.yaml
 
 i2c:
-  - id: bmp
-    sda: GPIO4
-    scl: GPIO5
+  - id: bme
+    sda: GPIO5
+    scl: GPIO4
     scan: True
 
 sensor:
-  - platform: bmp280
-    i2c_id: bmp
+  - platform: bme280
+    i2c_id: bme
     temperature:
       name: "${device_name} Temperature"  
       oversampling: 2x
