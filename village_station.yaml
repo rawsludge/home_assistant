@@ -3,6 +3,8 @@ substitutions:
   device_name: "Village Station"
   platform: ESP8266
   board: d1_mini
+  wifi_ssid: !secret wifi_ssid_b
+  wifi_passwd: !secret wifi_passwd_b
   ota_pwd: !secret ota_pwd
   api_pwd: !secret api_pwd
   ap_wifi_pwd: !secret ap_wifi_pwd
@@ -17,9 +19,13 @@ sensor:
     pin: D4
     temperature:
       name: "${device_name} Temperature"
-      accuracy_decimals: 2
+      accuracy_decimals: 1
       filters:
-        - lambda: return x - 4.0;
+        - median:
+            window_size: 10
+            send_every: 1
+            send_first_at: 5
+        - offset: -2.0
     humidity:
       name: "${device_name} Humidity"
       accuracy_decimals: 2
@@ -32,3 +38,22 @@ sensor:
 text_sensor:
   - !include common/text_sensor/version.yaml
   - !include common/text_sensor/wifi.yaml
+
+#deep_sleep:
+#  id: deep_sleep_1
+#  run_duration: 30s
+#  sleep_duration: 5min
+#
+#mqtt:
+#  broker: !secret mqtt_broker
+#  username: !secret mqtt_user
+#  password: !secret mqtt_pass
+#  on_message:
+#  - topic: village_station/ota_mode
+#    payload: 'ON'
+#    then:
+#      - deep_sleep.prevent: deep_sleep_1
+#  - topic: village_station/sleep_mode
+#    payload: 'ON'
+#    then:
+#      - deep_sleep.enter: deep_sleep_1

@@ -3,6 +3,8 @@ substitutions:
   device_name: Living Room
   platform: ESP8266
   board: nodemcuv2
+  wifi_ssid: !secret wifi_ssid
+  wifi_passwd: !secret wifi_passwd
   ota_pwd: !secret ota_pwd
   api_pwd: !secret api_pwd
   ap_wifi_pwd: !secret ap_wifi_pwd
@@ -21,12 +23,20 @@ sensor:
     i2c_id: bme
     temperature:
       name: "${device_name} Temperature"  
-      oversampling: 2x
+      oversampling: 1x
       accuracy_decimals: 2
       filters:
-        - lambda: return x - 2.0;
+        - median:
+            window_size: 10
+            send_every: 5
+            send_first_at: 5
+        - offset: -2.0
     pressure:
       name: "${device_name} Pressure"      
+      oversampling: 1x
+      accuracy_decimals: 2
+    humidity:
+      name: "${device_name} Humidity"      
       oversampling: 1x
       accuracy_decimals: 2
     address: 0x76
@@ -38,3 +48,5 @@ sensor:
 text_sensor:
   - !include common/text_sensor/version.yaml
   - !include common/text_sensor/wifi.yaml
+
+
