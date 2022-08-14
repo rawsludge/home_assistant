@@ -3,6 +3,8 @@ substitutions:
   device_name: Vaillant Combi
   platform: ESP8266
   board: d1_mini
+  wifi_ssid: !secret wifi_ssid
+  wifi_passwd: !secret wifi_passwd
   ota_pwd: !secret ota_pwd
   api_pwd: !secret api_pwd
   ap_wifi_pwd: !secret ap_wifi_pwd
@@ -10,6 +12,16 @@ substitutions:
 
 <<: !include common/esphome.yaml
 <<: !include common/common.yaml
+
+wifi:
+  ssid: ${wifi_ssid}
+  password: ${wifi_passwd}
+  reboot_timeout: 5min
+  output_power: 20.5dB
+  power_save_mode: none
+  ap:
+    ssid: ${device_id}
+    password: ${ap_wifi_pwd}
 
 sensor:
   - !include common/sensor/uptime.yaml

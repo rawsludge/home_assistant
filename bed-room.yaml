@@ -1,6 +1,6 @@
 substitutions:
-  device_id: living-room
-  device_name: Living Room
+  device_id: bed-room
+  device_name: Bed Room
   platform: ESP8266
   board: nodemcuv2
   wifi_ssid: !secret wifi_ssid
@@ -13,14 +13,14 @@ substitutions:
 <<: !include common/common.yaml
 
 i2c:
-  - id: bme
-    sda: GPIO5
-    scl: GPIO4
+  - id: bmp
+    sda: GPIO4
+    scl: GPIO5
     scan: True
 
 sensor:
-  - platform: bme280
-    i2c_id: bme
+  - platform: bmp280
+    i2c_id: bmp
     temperature:
       name: "${device_name} Temperature"  
       oversampling: 1x
@@ -30,13 +30,9 @@ sensor:
             window_size: 10
             send_every: 5
             send_first_at: 5
-        - offset: -2.0
+        - offset: -3.0
     pressure:
       name: "${device_name} Pressure"      
-      oversampling: 1x
-      accuracy_decimals: 2
-    humidity:
-      name: "${device_name} Humidity"      
       oversampling: 1x
       accuracy_decimals: 2
     address: 0x76
@@ -48,5 +44,3 @@ sensor:
 text_sensor:
   - !include common/text_sensor/version.yaml
   - !include common/text_sensor/wifi.yaml
-
-
